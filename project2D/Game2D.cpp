@@ -5,12 +5,10 @@
 #include "Font.h"
 #include "Input.h"
 #include "Player.h"
-#include "Grid.h"
 #include "Vector2.h"
 #include "Node.h"
 
-#define GRID_WIDTH 38
-#define GRID_HEIGHT 21
+
 
 Game2D::Game2D(const char* title, int width, int height, bool fullscreen) : Game(title, width, height, fullscreen)
 {
@@ -77,6 +75,14 @@ void Game2D::Update(float deltaTime)
 	//	m_v2EndPos = v2MousePos;
 
 	//m_pGrid->FindPath(m_v2StartPos, m_v2EndPos, m_Path);
+
+	if (input->WasKeyPressed(aie::INPUT_KEY_J))
+		m_pGrid->Save();
+
+	if (input->WasKeyPressed(aie::INPUT_KEY_L))
+		m_pGrid->Load();
+
+
 
 	// Exit the application if escape is pressed.
 	if (input->IsKeyDown(aie::INPUT_KEY_ESCAPE))

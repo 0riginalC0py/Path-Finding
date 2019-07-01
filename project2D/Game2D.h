@@ -4,8 +4,8 @@
 #include "Renderer2D.h"
 #include "Vector2.h"
 #include <vector>
+#include "Grid.h"
 
-class Grid;
 class Player;
 
 class Game2D : public aie::Game

@@ -4,6 +4,15 @@
 #include "Vector2.h"
 #include "PathHeap.h"
 
+#define GRID_WIDTH 38
+#define GRID_HEIGHT 21
+#define SQUARE_SIZE 50.0f
+#define GRID_POS_X 32
+#define GRID_POS_Y 32
+#define ADJACENT_COST 10
+#define DIAGONAL_COST 14
+
+
 struct Node;
 
 class Grid
@@ -21,6 +30,9 @@ public:
 	
 	int CalculateHeuristic(Node* pNode, Node* pEnd);
 
+
+	void Save();
+	void Load();
 private:
 	Node*** m_apNodeList;
 
@@ -29,4 +41,5 @@ private:
 
 	int m_nWidth;
 	int m_nHeight;
+
 };
