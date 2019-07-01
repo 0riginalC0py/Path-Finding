@@ -3,10 +3,9 @@
 #include "Renderer2D.h"
 #include "Vector2.h"
 #include "PathHeap.h"
-#include "DebugList.h"
 
-#define GRID_WIDTH 20
-#define GRID_HEIGHT 20
+#define GRID_WIDTH 38
+#define GRID_HEIGHT 21
 #define SQUARE_SIZE 50.0f
 #define GRID_POS_X 32
 #define GRID_POS_Y 32
@@ -19,7 +18,7 @@ struct Node;
 class Grid
 {
 public:
-	Grid(int nWidth, int nHeight, DebugList* pDebugList);
+	Grid(int nWidth, int nHeight);
 	~Grid();
 
 	void Draw(aie::Renderer2D* pRenderer);
@@ -39,8 +38,6 @@ private:
 
 	/*std::vector<Node*>*/PathHeap m_OpenList;
 	bool* m_bClosedList;
-
-	DebugList* m_pDebug;
 
 	int m_nWidth;
 	int m_nHeight;

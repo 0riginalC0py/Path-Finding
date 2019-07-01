@@ -32,7 +32,6 @@ void DebugList::Update()
 {
 	aie::Input* input = aie::Input::GetInstance();
 	aie::Application* application = aie::Application::GetInstance();
-
 	if (input->WasKeyPressed(aie::INPUT_KEY_1))
 	{
 		if (item[0])
@@ -53,20 +52,6 @@ void DebugList::Update()
 			item[2] = false;
 		else
 			item[2] = true;
-	}
-	if (input->WasKeyPressed(aie::INPUT_KEY_4))
-	{
-		if (item[3])
-			item[3] = false;
-		else	 
-			item[3] = true;
-	}
-	if (input->WasKeyPressed(aie::INPUT_KEY_5))
-	{			  
-		if (item[4])
-			item[4] = false;
-		else	 
-			item[4] = true;
 	}
 
 	if (input->IsKeyDown(aie::INPUT_KEY_ESCAPE))

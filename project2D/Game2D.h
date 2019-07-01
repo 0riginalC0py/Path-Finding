@@ -7,7 +7,6 @@
 #include "Grid.h"
 #include "DebugList.h"
 
-
 class Player;
 
 class Game2D : public aie::Game
@@ -28,12 +27,10 @@ protected:
 	aie::Font*			m_font;
 
 	Grid* m_pGrid;
-	DebugList* m_pDebugList;
 	Vector2 m_v2StartPos;
 	Vector2 m_v2EndPos;
 	std::vector<Vector2> m_Path;
-
-
+	DebugList m_debug;
 	// Player.
 	Player* m_Player;
 };
