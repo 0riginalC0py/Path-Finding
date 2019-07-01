@@ -171,6 +171,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="DebugList.cpp" />
     <ClCompile Include="Game2D.cpp" />
     <ClCompile Include="Grid.cpp" />
     <ClCompile Include="main.cpp" />
@@ -184,6 +185,7 @@
     <ClCompile Include="Vector4.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="DebugList.h" />
     <ClInclude Include="Game2D.h" />
     <ClInclude Include="Grid.h" />
     <ClInclude Include="Matrix3.h" />

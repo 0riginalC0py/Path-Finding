@@ -82,14 +82,13 @@ void Game2D::Update(float deltaTime)
 	if (input->WasKeyPressed(aie::INPUT_KEY_L))
 		m_pGrid->Load();
 
-
+	
+		
+	
+	m_debug.Update();
+	
 
 	// Exit the application if escape is pressed.
-	if (input->IsKeyDown(aie::INPUT_KEY_ESCAPE))
-	{
-		aie::Application* application = aie::Application::GetInstance();
-		application->Quit();
-	}
 }
 
 void Game2D::Draw()
@@ -105,12 +104,15 @@ void Game2D::Draw()
 
 	m_pGrid->Draw(m_2dRenderer);
 
+	if (m_debug.item[0])
+	{
+	
 	m_2dRenderer->SetRenderColour(0xFF2376FF);
 	for (int i = 1; i < m_Path.size(); i++)
 	{
 		m_2dRenderer->DrawLine(m_Path[i - 1].x, m_Path[i - 1].y, m_Path[i].x, m_Path[i].y, 5.0f);
 	}
-
+	}
 	m_2dRenderer->SetRenderColour(0x3F2BA6FF);
 	m_2dRenderer->DrawCircle(m_v2StartPos.x, m_v2StartPos.y, 5.0f);
 
