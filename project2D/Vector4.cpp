@@ -1,158 +1,153 @@
 #include "Vector4.h"
-
-#include <cmath>
-#include <cassert>
+#include "math.h"
 
 
 Vector4::Vector4()
 {
-	x = 0.0f;
-	y = 0.0f;
-	z = 0.0f;
-	w = 0.0f;
+	m_x = 0;
+	m_y = 0;
+	m_z = 0;
+	m_w = 0;
 }
+
 
 Vector4::Vector4(float x, float y, float z, float w)
 {
-	this->x = x;
-	this->y = y;
-	this->z = z;
-	this->w = w;
+	m_x = x;
+	m_y = y;
+	m_z = z;
+	m_w = w;
 }
 
+
+Vector4::~Vector4()
+{
+}
+//Gets the magnitude of a vector(float) squared
 float Vector4::magnitude()
 {
-	float result = (x * x) + (y * y) + (z * z) + (w * w);
+	float result = (m_x * m_x) + (m_y * m_y) + (m_z * m_z);
 	return sqrtf(result);
 }
-
+//Gets the magnitude of a vector(float) unsquared
 float Vector4::magnitudeSqr()
 {
-	float result = (x * x) + (y * y) + (z * z) + (w * w);
+	float result = (m_x * m_x) + (m_y * m_y) + (m_z * m_z) + (m_w * m_w);
 	return result;
 }
+//(float)
+float Vector4::dot(const Vector4& rhs)
+{
+	return (m_x * rhs.m_x) + (m_y * rhs.m_y) + (m_z * rhs.m_z) + (m_w * rhs.m_w);
+}
 
+//Returns the cross product as a vector.
+Vector4 Vector4::cross(const Vector4& right)
+{
+	Vector4 result;
+	result.m_x = (m_y * right.m_z) - (m_z * right.m_y);
+	result.m_y = (m_z * right.m_x) - (m_x * right.m_z);
+	result.m_z = (m_x * right.m_y) - (m_y * right.m_x);
+	result.m_w = 0;
+	return result;
+}
+//Normalises a vector
 void Vector4::normalise()
 {
 	float mag = magnitude();
-
-	_STL_ASSERT(mag != 0.0f, "Normalise: Divide by zero");
-	assert(mag != 0.0f && "Normalise: Divide by zero");
 	if (mag != 0.0f)
 	{
-		x /= mag;
-		y /= mag;
-		z /= mag;
-		w /= mag;
+		m_x /= mag;
+		m_y /= mag;
+		m_z /= mag;
+		m_w /= mag;
 	}
 }
 
-Vector4 Vector4::normaliseOther(const Vector4& other)
+Vector4 Vector4::normaliseOther(Vector4 other)
 {
-	Vector4 result(other.x, other.y, other.z, other.w);
+	Vector4 result(other.m_x, other.m_y, other.m_y, other.m_w);
 	result.normalise();
 	return result;
 }
 
-float Vector4::dot(const Vector4& rhs)
-{
-	return (x * rhs.x) + (y * rhs.y) + (z * rhs.z) + (w * rhs.w);
-}
+//-----------------------------------------------
+//Operators
+//-----------------------------------------------
 
-Vector4 Vector4::cross(Vector4 rhs)
+//Adds 2 vectors and returns a vector as a result
+Vector4 Vector4::operator +(const Vector4& right)
 {
 	Vector4 result;
-	result.x = (y * rhs.z) - (z * rhs.y);
-	result.y = (z * rhs.x) - (x * rhs.z);
-	result.z = (x * rhs.y) - (y * rhs.x);
-	result.w = 0;
-
+	result.m_x = m_x + right.m_x;
+	result.m_y = m_y + right.m_y;
+	result.m_z = m_z + right.m_z;
+	result.m_w = m_w + right.m_w;
+	return result;
+}
+//Subtracts 2 vectors and returns a vector as a result
+Vector4 Vector4::operator -(const Vector4& right)
+{
+	Vector4 result;
+	result.m_x = m_x - right.m_x;
+	result.m_y = m_y - right.m_y;
+	result.m_z = m_z - right.m_z;
+	result.m_w = m_w - right.m_w;
+	return result;
+}
+//Times vector by float(Vector)
+Vector4 Vector4::operator *(float right)
+{
+	Vector4 result;
+	result.m_x = m_x * right;
+	result.m_y = m_y * right;
+	result.m_z = m_z * right;
+	result.m_w = m_w * right;
 	return result;
 }
 
-Vector4 Vector4::operator+(const Vector4& rhs)
+Vector4 operator*(float left, Vector4 right)
 {
-	return Vector4(x + rhs.x, y + rhs.y, z + rhs.z, w + rhs.w);
+	Vector4 result;
+	result.m_x = left * right.m_x;
+	result.m_y = left * right.m_y;
+	result.m_z = left * right.m_z;
+	result.m_w = left * right.m_w;
+	return result;
 }
 
-Vector4 Vector4::operator-(const Vector4& rhs)
+Vector4 Vector4::operator/ (float right)
 {
-	return Vector4(x - rhs.x, y - rhs.y, z - rhs.z, w - rhs.w);
+	Vector4 result;
+	result.m_x = m_x / right;
+	result.m_y = m_y / right;
+	result.m_z = m_z / right;
+	result.m_w = m_w / right;
+	return result;
 }
 
-Vector4 Vector4::operator*(float rhs)
+void Vector4::operator+=(const Vector4& rhs)
 {
-	return Vector4(x * rhs, y * rhs, z * rhs, w * rhs);
+	m_x += rhs.m_x;
+	m_y += rhs.m_y;
+	m_z += rhs.m_z;
+	m_w += rhs.m_w;
 }
 
-Vector4 operator*(float lhs, Vector4 rhs)
+void Vector4::operator-=(const Vector4& rhs)
 {
-	return Vector4(lhs * rhs.x, lhs * rhs.y, lhs * rhs.z, lhs * rhs.w);
+	m_x -= rhs.m_x;
+	m_y -= rhs.m_y;
+	m_z -= rhs.m_z;
+	m_w -= rhs.m_w;
 }
 
-Vector4 Vector4::operator/(float rhs)
+float& Vector4::operator[](int iterator)
 {
-	return Vector4(x / rhs, y / rhs, z / rhs, w / rhs);
-}
-
-Vector4& Vector4::operator+=(const Vector4& rhs)
-{
-	//Easy Way
-	//x += rhs.x;
-	//y += rhs.y;
-	//z += rhs.z;
-	//w += rhs.w;
-
-	//Eric Way
-	*this = *this + rhs;
-	return *this;
-}
-
-Vector4& Vector4::operator-=(const Vector4& rhs)
-{
-	x -= rhs.x;
-	y -= rhs.y;
-	z -= rhs.z;
-	w -= rhs.w;
-	return *this;
-}
-
-Vector4 Vector4::operator*=(float rhs)
-{
-	x *= rhs;
-	y *= rhs;
-	z *= rhs;
-	w *= rhs;
-	return *this;
-}
-
-Vector4 Vector4::operator/=(float rhs)
-{
-	x /= rhs;
-	y /= rhs;
-	z /= rhs;
-	w /= rhs;
-	return *this;
-}
-
-float& Vector4::operator[](int index)
-{
-	//Easiest Format
-	//if (index == 0)
-	//	return x;
-	//else if (index == 1)
-	//	return y;
-
-	//Richard Format
-	//return *(&x + index);
-
-	//Chris Format
-	return ((float*)this)[index];
+	return *(&m_x + iterator);
 }
 
 Vector4::operator float*()
 {
-	//return (float*)this;
-
-	return &x;
+	return &m_x;
 }

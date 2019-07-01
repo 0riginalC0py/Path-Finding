@@ -1,16 +1,11 @@
 #pragma once
-//#include <vector>
 #include "Renderer2D.h"
 #include "Vector2.h"
+#include <vector>
 #include "PathHeap.h"
 
-#define GRID_WIDTH 38
-#define GRID_HEIGHT 21
-#define SQUARE_SIZE 50.0f
-#define GRID_POS_X 32
-#define GRID_POS_Y 32
-#define ADJACENT_COST 10
-#define DIAGONAL_COST 14
+
+class BB;
 
 
 struct Node;
@@ -18,28 +13,35 @@ struct Node;
 class Grid
 {
 public:
-	Grid(int nWidth, int nHeight);
+	Grid(int sizeWidth, int sizeHeight);
 	~Grid();
-
-	void Draw(aie::Renderer2D* pRenderer);
-
-	Node* GetNodeByPosition(Vector2 v2Pos);
-	bool FindPath(Vector2 v2Start, Vector2 v2End, std::vector<Vector2>& path);
-
-	aie::Font* m_font;
 	
-	int CalculateHeuristic(Node* pNode, Node* pEnd);
+	float FindEnd(Node* current, Node* end);
 
+	bool FindPath(Vector2 start, Vector2 end, std::vector<Vector2>& path);
+	void Draw(aie::Renderer2D* renderer, BB levelManager);
+	Node* GetNodeByPos(Vector2 pos);
+
+	
 
 	void Save();
 	void Load();
 private:
-	Node*** m_apNodeList;
+	int m_Height;
+	int m_Width;
 
-	/*std::vector<Node*>*/PathHeap m_OpenList;
-	bool* m_bClosedList;
 
-	int m_nWidth;
-	int m_nHeight;
+	//void SortOpenList();
+	
+	//Used for saving.
+	//I think this is dumb and can
+	//be done better.
+	
 
+	Node*** m_NodeList;
+	bool* m_ClosedList;
+
+	//std::vector<Node*> m_OpenList;
+	PathHeap m_OpenList;
 };
+

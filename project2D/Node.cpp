@@ -2,26 +2,29 @@
 
 
 
-Node::Node(Vector2 v2Pos, int nIndexX, int nIndexY)
+Node::Node(Vector2 pos, int indexX, int indexY)
 {
-	m_v2Position = v2Pos;
-	m_nIndexX = nIndexX;
-	m_nIndexY = nIndexY;
-
-	m_pPrevious = nullptr;
-	m_nGScore = 0;
-	m_nHScore = 0;
-	m_nFScore = 0;
-	m_bBlocked = false;
-	
+	m_position = pos;
+	m_indexX = indexX;
+	m_indexY = indexY;
+	m_previous = nullptr;
+	m_gScore = 0;
+	//Added without instruction
+	m_hScore = 0;
+	m_fScore = 0;
+	m_blocked = false;
 	for (int i = 0; i < NEIGHBOUR_COUNT; i++)
 	{
-		m_apNeighbours[i] = nullptr;
-		m_anCosts[i] = 0;
+		m_pNeighbours[i] = nullptr;
+		m_costs[i] = 0;
 	}
+
 }
 
 
 Node::~Node()
 {
+
 }
+
+

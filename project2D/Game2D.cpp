@@ -5,8 +5,8 @@
 #include "Font.h"
 #include "Input.h"
 #include "Player.h"
-#include "Vector2.h"
 #include "Node.h"
+
 
 
 
@@ -14,17 +14,14 @@ Game2D::Game2D(const char* title, int width, int height, bool fullscreen) : Game
 {
 	// Initalise the 2D renderer.
 	m_2dRenderer = new aie::Renderer2D();
-
-	// Create some textures for testing.
-	m_texture = new aie::Texture("./textures/hero.png");
-	m_texture2 = new aie::Texture("./textures/rock_large.png");
 	m_font = new aie::Font("./font/consolas.ttf", 24);
-
-	m_pGrid = new Grid(GRID_WIDTH, GRID_HEIGHT);
-
 	// Create a player object.
-	m_Player = new Player(m_pGrid);
-
+	m_Player = new Player();
+	//Initialisation of gameManger. 
+	//Might be better to do it in the class itself.
+	m_levelManager.m_grid = new Grid(GRID_WIDTH, GRID_HEIGHT);
+	
+	//m_gameManager.m_totalSquares = GRID_WIDTH * GRID_HEIGHT;
 }
 
 Game2D::~Game2D()
@@ -33,58 +30,160 @@ Game2D::~Game2D()
 	delete m_Player;
 	m_Player = nullptr;
 
-	delete m_pGrid;
 	// Deleted the textures.
 	delete m_font;
-	delete m_texture;
-	delete m_texture2;
-
 	// Delete the renderer.
 	delete m_2dRenderer;
+	//delete m_Grid;
+	delete m_levelManager.m_grid;
 }
 
 void Game2D::Update(float deltaTime)
 {
-	// Update the player.
-	m_Player->Update(deltaTime);
+	//----------------------------------------------------
+	//Allow input.
+	//Passed pointer passed into updates that require input
+	//----------------------------------------------------
 
-	// Input example: Update the camera position using the arrow keys.
 	aie::Input* input = aie::Input::GetInstance();
-	Vector2 v2MousePos;
-	v2MousePos.x = input->GetMouseX();
-	v2MousePos.y = input->GetMouseY();
+	
+	//----------------------------------------------------
+	//Get the position of camera.
+	//Needs to be passed into functions to be added to 
+	//anything that requires interaction with mouse.
+	//Also used to set camera on position on player sprite.
+	//----------------------------------------------------
 
-	////Pathfinding
+	m_levelManager.m_camera = m_Player->GetV2pos();
+	
+	//----------------------------------------------------
+	//Left in as example for camera being independant from
+	//player.
+	//----------------------------------------------------
+	/*
+	float camPosX;
+	float camPosY;
+	m_2dRenderer->GetCameraPos(camPosX, camPosY);
+
+	if (input->IsKeyDown(aie::INPUT_KEY_W))
+		camPosY += 500.0f * deltaTime;
+
+	if (input->IsKeyDown(aie::INPUT_KEY_S))
+		camPosY -= 500.0f * deltaTime;
+
+	if (input->IsKeyDown(aie::INPUT_KEY_A))
+		camPosX -= 500.0f * deltaTime;
+
+	if (input->IsKeyDown(aie::INPUT_KEY_D))
+		camPosX += 500.0f * deltaTime;
+		
+	*/
+	
+
+	//----------------------------------------------------
+	//Sets camera position with the offsets.
+	//Located within header.
+	//----------------------------------------------------
+
+	m_2dRenderer->SetCameraPos(m_levelManager.m_camera.m_x - WINDOW_OFFSET_X, m_levelManager.m_camera.m_y - WINDOW_OFFSET_Y);
+
+	//----------------------------------------------------
+	//Gets the mouse position for interaction with grid.
+	//Seperate from camera but camera needs to be added to
+	//correctly calculate position. Offsets of window also
+	//needed.
+	//----------------------------------------------------
+
+	m_levelManager.v2MousePos.m_x = (float)input->GetMouseX() + m_levelManager.m_camera.m_x - WINDOW_OFFSET_X;
+	m_levelManager.v2MousePos.m_y = (float)input->GetMouseY() + m_levelManager.m_camera.m_y - WINDOW_OFFSET_Y;
+
+	//----------------------------------------------------
+	//A testament to failure. Ask Finn.
+	#define INV_ROOT_TWO 4.54568795135446f
+	//----------------------------------------------------
+
+
+	//----------------------------------------------------
+	//Checks input for mouse buttons are pressed for interatcions
+	//with grid. ie. Blocking/Unblocking boxes on grid
+	//Needs mouse position to get correct Node.
+	//----------------------------------------------------
+
+	//For blocking Nodes.
 	if (input->IsMouseButtonDown(0))
 	{
-		Node* pMouseNode = m_pGrid->GetNodeByPosition(v2MousePos);
-		if (pMouseNode)
-			pMouseNode->m_bBlocked = true;
+		Node* mouseNode = m_levelManager.m_grid->GetNodeByPos(m_levelManager.v2MousePos);
+		if (mouseNode)
+		{
+			mouseNode->m_blocked = true;
+		}
 	}
+	//For unblocking Nodes.
 	if (input->IsMouseButtonDown(1))
 	{
-		Node* pMouseNode = m_pGrid->GetNodeByPosition(v2MousePos);
-		if (pMouseNode)
-			pMouseNode->m_bBlocked = false;
+		Node* mouseNode = m_levelManager.m_grid->GetNodeByPos(m_levelManager.v2MousePos);
+		if (mouseNode)
+		{
+			mouseNode->m_blocked = false;
+		}
 	}
 
-	//if (input->WasKeyPressed(aie::INPUT_KEY_S))
-	//	m_v2StartPos = v2MousePos;
+	//----------------------------------------------------
+	//Checks input and places a start or end point.
+	//Requires mouse position and start and end variables.
+	//Moved into player.
+	//----------------------------------------------------
 
+	//if (input->WasKeyPressed(aie::INPUT_KEY_Q))
+	//{
+	//	m_start = v2MousePos;
+	//}
 	//if (input->WasKeyPressed(aie::INPUT_KEY_E))
-	//	m_v2EndPos = v2MousePos;
+	//{
+	//	m_end = v2MousePos;
+	//}
 
-	//m_pGrid->FindPath(m_v2StartPos, m_v2EndPos, m_Path);
+	//----------------------------------------------------
+	//Path is calculated based on start and end.
+	//Function handles all valid information.
+	//Path would then need to be passed into player
+	//from here to have player travel down path.
+	//Path is passed in as a reference.
+	//Moved into player.
+	//----------------------------------------------------
 
-	if (input->WasKeyPressed(aie::INPUT_KEY_J))
-		m_pGrid->Save();
+	//m_Grid->FindPath(m_start, m_end, m_globalPath);
+	
+	//----------------------------------------------------
+	//Saveing and loading done here.
+	//Consider moving into gameManger.
+	//----------------------------------------------------
+	if(input->WasKeyPressed(aie::INPUT_KEY_J))
+		m_levelManager.m_grid->Save();
 
-	if (input->WasKeyPressed(aie::INPUT_KEY_L))
-		m_pGrid->Load();
+	if(input->WasKeyPressed(aie::INPUT_KEY_L))
+		m_levelManager.m_grid->Load();
+	//----------------------------------------------------
+	//Update function on player.
+	//Needs the path to be able to move towards it.
+	//Needs camera if any interactions are handled via mouse.
+	//Trialing passing in setup information in a game manger
+	//for global variables.
+	//Check 'BB.h'
+	//----------------------------------------------------
+	
+	m_Player->Update(deltaTime, m_levelManager);
+	
+	//----------------------------------------------------
+	//Updates debug toggles.
+	//Very ugly and I don't like it.
+	//----------------------------------------------------
+	m_levelManager.m_debugList.Update();
 
-
-
-	// Exit the application if escape is pressed.
+	//----------------------------------------------------
+	//Exit the application if escape is pressed.
+	//Consdier moving into game manager.
+	//----------------------------------------------------
 	if (input->IsKeyDown(aie::INPUT_KEY_ESCAPE))
 	{
 		aie::Application* application = aie::Application::GetInstance();
@@ -97,62 +196,59 @@ void Game2D::Draw()
 	aie::Application* application = aie::Application::GetInstance();
 	float time = application->GetTime();
 
+	//----------------------------------------------------
 	// Wipe the screen to clear away the previous frame.
+	//----------------------------------------------------
+	
 	application->ClearScreen();
 
+	//----------------------------------------------------
 	// Prepare the renderer. This must be called before any sprites are drawn.
+	//----------------------------------------------------
+	
 	m_2dRenderer->Begin();
 
-	m_pGrid->Draw(m_2dRenderer);
+	//----------------------------------------------------
+	//Draw Nodes as squares and lines between Nodes.
+	//Removing will remove nodes in any state.
+	//Change Square size in cpp
+	//----------------------------------------------------
 
-	m_2dRenderer->SetRenderColour(0xFF2376FF);
-	for (int i = 1; i < m_Path.size(); i++)
+	m_levelManager.m_grid->Draw(m_2dRenderer, m_levelManager);
+
+	//----------------------------------------------------
+	//Draw lines along destination.
+	//Remove if no lines wanted.
+	//For debug purposes. 
+	//Consider turning on/off via a key press.
+	//Consider moving into game manager.
+	//----------------------------------------------------
+
+	if (m_levelManager.m_debugList.item[2])
 	{
-		m_2dRenderer->DrawLine(m_Path[i - 1].x, m_Path[i - 1].y, m_Path[i].x, m_Path[i].y, 5.0f);
+		for (int i = 1; i < m_levelManager.m_globalPath.size(); i++)
+		{
+			m_2dRenderer->DrawLine(m_levelManager.m_globalPath[i - 1].m_x, m_levelManager.m_globalPath[i - 1].m_y,
+				m_levelManager.m_globalPath[i].m_x, m_levelManager.m_globalPath[i].m_y);
+		}
 	}
 
-	m_2dRenderer->SetRenderColour(0x3F2BA6FF);
-	m_2dRenderer->DrawCircle(m_v2StartPos.x, m_v2StartPos.y, 5.0f);
+	//----------------------------------------------------
+	//Draw the player.
+	//----------------------------------------------------
 
-	m_2dRenderer->SetRenderColour(0x24F856FF);
-	m_2dRenderer->DrawCircle(m_v2EndPos.x, m_v2EndPos.y, 5.0f);
-
-	m_2dRenderer->SetRenderColour(0xFFFFFFFF);
-
-	// Draw the player.
 	m_Player->Draw(m_2dRenderer);
 
-	//// Draw a thin line.
-	//m_2dRenderer->DrawLine(150.0f, 400.0f, 250.0f, 500.0f, 2.0f);
+	//----------------------------------------------------
+	//Draw some text.
+	//Left in as example.
+	//----------------------------------------------------
 
-	//// Draw a sprite
-	//m_2dRenderer->DrawSprite(m_texture2, 200.0f, 200.0f);
-
-	//// Draw a moving purple circle.
-	//m_2dRenderer->SetRenderColour(1.0f, 0.0f, 1.0f, 1.0f);
-	//m_2dRenderer->DrawCircle(sin(time) * 100.0f + 450.0f, 200.0f, 50.0f);
-
-	//// Draw a rotating sprite with no texture, coloured yellow.
-	//m_2dRenderer->SetRenderColour(1.0f, 1.0f, 0.0f, 1.0f);
-	//m_2dRenderer->DrawSprite(nullptr, 700.0f, 200.0f, 50.0f, 50.0f, time);
-	//m_2dRenderer->SetRenderColour(1.0f, 1.0f, 1.0f, 1.0f);
-
-	//// Demonstrate animation.
-	//float animSpeed = 10.0f;
-	//int frame = ((int)(time * animSpeed) % 6);
-	//float size = 1.0f / 6.0f;
-	//m_2dRenderer->SetUVRect(frame * size, 0.0f, size, 1.0f);
-	//m_2dRenderer->DrawSprite(m_texture, 900.0f, 200.0f, 100.0f, 100.0f);
-	//m_2dRenderer->SetUVRect(0.0f, 0.0f, 1.0f, 1.0f);
-	
-	// Draw some text.
 	float windowHeight = (float)application->GetWindowHeight();
 	char fps[32];
 	sprintf_s(fps, 32, "FPS: %i", application->GetFPS());
 	m_2dRenderer->DrawText2D(m_font, fps, 15.0f, windowHeight - 32.0f);
-	//m_2dRenderer->DrawText2D(m_font, "Arrow keys to move.", 15.0f, windowHeight - 64.0f);
-	//m_2dRenderer->DrawText2D(m_font, "WASD to move camera.", 15.0f, windowHeight - 96.0f);
-	//m_2dRenderer->DrawText2D(m_font, "Press ESC to quit!", 15.0f, windowHeight - 128.0f);
+	m_2dRenderer->DrawText2D(m_font, "Press ESC to quit!", 15.0f, windowHeight - 128.0f);
 
 	// Done drawing sprites. Must be called at the end of the Draw().
 	m_2dRenderer->End();

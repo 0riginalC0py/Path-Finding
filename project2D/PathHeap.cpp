@@ -1,6 +1,5 @@
 #include "PathHeap.h"
 #include "Node.h"
-#include <algorithm>
 
 PathHeap::PathHeap()
 {
@@ -12,86 +11,90 @@ PathHeap::~PathHeap()
 
 }
 
+int PathHeap::GetCount()
+{
+	return (int)m_Heap.size();
+}
+
+
+
 void PathHeap::Push(Node* pNode)
 {
-	m_NodeHeap.push_back(pNode);
-
-	int nCurrent = m_NodeHeap.size() - 1;
-	int nParent = GetParent(nCurrent);
-
-	while (m_NodeHeap[nCurrent]->m_nFScore < m_NodeHeap[nParent]->m_nFScore)
+	m_Heap.push_back(pNode);
+	int Current = (int)m_Heap.size() - 1;
+	int Parent = GetParent(Current);
+	while (m_Heap[Current]->m_fScore < m_Heap[Parent]->m_fScore)
 	{
-		Node* pSwap = m_NodeHeap[nCurrent];
-		m_NodeHeap[nCurrent] = m_NodeHeap[nParent];
-		m_NodeHeap[nParent] = pSwap;
+		Node* swap = m_Heap[Current];
+		m_Heap[Current] = m_Heap[Parent];
+		m_Heap[Parent] = swap;
 
-		nCurrent = nParent;
-		nParent = GetParent(nCurrent);
+		Current = Parent;
+		Parent = GetParent(Current);
 	}
 }
+
 
 Node* PathHeap::Pop()
 {
-	Node* pNode = m_NodeHeap[0];
+	Node* pNode = m_Heap[0];
 
-	int nLast = m_NodeHeap.size() - 1;
+	int Last = (int)m_Heap.size() - 1;
 
-	int nCurrent = 0;
-	m_NodeHeap[nCurrent] = m_NodeHeap[nLast];
-	m_NodeHeap.pop_back();
+	int current = 0;
+	
+	m_Heap[current] = m_Heap[Last];
+	m_Heap.pop_back();
+	int child1Index = GetChild(current, 1);
+	int child2Index = GetChild(current, 2);
 
-	int nChild1Index = GetChild(nCurrent, 1);
-	int nChild2Index = GetChild(nCurrent, 2);
-
-	int nCheapestChildIndex = nChild1Index;
-	if (nCheapestChildIndex >= m_NodeHeap.size())
+	int cheapestChild = child1Index;
+	
+	if (cheapestChild >= m_Heap.size())
 		return pNode;
 
-	if (nChild2Index < m_NodeHeap.size() && m_NodeHeap[nChild2Index]->m_nFScore < m_NodeHeap[nCheapestChildIndex]->m_nFScore)
-		nCheapestChildIndex = nChild2Index;
+	if (child2Index < m_Heap.size() && m_Heap[child2Index]->m_fScore < m_Heap[cheapestChild]->m_fScore)
+		cheapestChild = child2Index;
 
-	while (m_NodeHeap[nCheapestChildIndex]->m_nFScore < m_NodeHeap[nCurrent]->m_nFScore)
+	while (m_Heap[cheapestChild]->m_fScore < m_Heap[current]->m_fScore)
 	{
-		Node* pSwap = m_NodeHeap[nCheapestChildIndex];
-		m_NodeHeap[nCheapestChildIndex] = m_NodeHeap[nCurrent];
-		m_NodeHeap[nCurrent] = pSwap;
+		Node* swap = m_Heap[cheapestChild];
+		m_Heap[cheapestChild] = m_Heap[current];
+		m_Heap[current] = swap;
 
-		nCurrent = nCheapestChildIndex;
-		nChild1Index = GetChild(nCurrent, 1);
-		nChild2Index = GetChild(nCurrent, 2);
+		current = cheapestChild;
+		child1Index = GetChild(current, 1);
+		child2Index = GetChild(current, 2);
 
-		nCheapestChildIndex = nChild1Index;
-		if (nCheapestChildIndex >= m_NodeHeap.size())
+		cheapestChild = child1Index;
+		
+		if (cheapestChild >= m_Heap.size())
 			return pNode;
 
-		if (nChild2Index < m_NodeHeap.size() && m_NodeHeap[nChild2Index]->m_nFScore < m_NodeHeap[nCheapestChildIndex]->m_nFScore)
-			nCheapestChildIndex = nChild2Index;
+		if (child2Index < m_Heap.size() && m_Heap[child2Index]->m_fScore < m_Heap[cheapestChild]->m_fScore)
+			cheapestChild = child2Index;
 	}
-
-	return pNode;
-}
-
-int PathHeap::GetCount()
-{
-	return m_NodeHeap.size();
+		return pNode;
 }
 
 void PathHeap::Clear()
 {
-	m_NodeHeap.clear();
+	m_Heap.clear();
 }
 
-bool PathHeap::Find(Node * pNode)
+bool PathHeap::FindNode(Node* pNode)
 {
-	return std::find(m_NodeHeap.begin(), m_NodeHeap.end(), pNode) != m_NodeHeap.end();
+	return std::find(m_Heap.begin(), m_Heap.end(), pNode) != m_Heap.end();
 }
+
 
 int PathHeap::GetParent(int index)
 {
 	return (index - 1) / 2;
 }
 
+
 int PathHeap::GetChild(int index, int child)
 {
-	return (2 * index) + child;
+	return (index * 2) + child;
 }

@@ -1,32 +1,28 @@
 #pragma once
-struct Vector2
+class Vector2
 {
+public:
 	Vector2();
 	Vector2(float x, float y);
+	~Vector2();
 
 	float magnitude();
 	float magnitudeSqr();
 	void normalise();
-	static Vector2 normaliseOther(const Vector2& other);
-
-	float dot(const Vector2& rhs);
+	Vector2 normaliseOther(Vector2 right);
 	Vector2 right();
+	float dot(const Vector2& rhs);
 
-	Vector2 operator+(const Vector2& rhs);
-	Vector2 operator-(const Vector2& rhs);
-	Vector2 operator*(float rhs);
-	Vector2 operator/(float rhs);
-	
-	Vector2& operator+=(const Vector2& rhs);
-	Vector2& operator-=(const Vector2& rhs);
-	Vector2 operator*=(float rhs);
-	Vector2 operator/=(float rhs);
+	float m_x, m_y;
 
-	float& operator[](int index);
+	Vector2 operator +(const Vector2& right);
+	Vector2 operator -(const Vector2& right);
+	Vector2 operator *(float right);
+	Vector2 operator /(float right);
+	void operator +=(const Vector2& right);
+	void operator -=(const Vector2& right);
+	float& operator[](int iterator);
 	operator float*();
-
-	float x;
-	float y;
 };
 
-Vector2 operator*(float lhs, Vector2 rhs);
+Vector2 operator*(float left, Vector2 right);

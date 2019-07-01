@@ -3,28 +3,34 @@
 #include "Renderer2D.h"
 #include "Texture.h"
 #include "Vector2.h"
-#include "Grid.h"
+#include <vector>
+#include "BB.h"
+
+
 
 class Player
 {
 public:
-	Player(Grid* pGrid);
+	Player();
 	~Player();
 
-	void Update(float deltaTime);
+	void Update(float deltaTime, BB& levelManager);
 	void Draw(aie::Renderer2D* renderer);
 
+	Vector2 GetV2pos();
+
 private:
+
+	Vector2 m_start;
+	Vector2 m_end;
+
 	aie::Texture* m_texture;
+	Vector2 m_position;
+	
+	//If false will get new position.
+	//bool m_findPosition;
 
-	Vector2 m_v2Position;
-	float m_fRotation;
+	//::vector<Vector2> m_playerPath;
 
-	Vector2 m_v2StartPos;
-	Vector2 m_v2EndPos;
-	std::vector<Vector2> m_Path;
-
-	Grid* m_pGrid;
-	bool m_bRecalculate;
-	bool m_bPathFinding;
 };
+

@@ -1,145 +1,144 @@
 #include "Vector3.h"
+#include "math.h"
 
-#include <cassert>
-#include <cmath>
 
 Vector3::Vector3()
 {
-	x = 0.0f;
-	y = 0.0f;
-	z = 0.0f;
+	m_x = 0;
+	m_y = 0;
+	m_z = 0;
 }
 
 Vector3::Vector3(float x, float y, float z)
 {
-	this->x = x;
-	this->y = y;
-	this->z = z;
+	m_x = x;
+	m_y = y;
+	m_z = z;
 }
 
+
+Vector3::~Vector3()
+{
+}
+//Gets the magnitude of a vector(float) squared
 float Vector3::magnitude()
 {
-	float result = (x * x) + (y * y) + (z * z);
+	float result = (m_x * m_x) + (m_y * m_y) + (m_z * m_z);
 	return sqrtf(result);
 }
-
+//Gets the magnitude of a vector(float) unsquared
 float Vector3::magnitudeSqr()
 {
-	float result = (x * x) + (y * y) + (z * z);
+	float result = (m_x * m_x) + (m_y * m_y) + (m_z * m_z);
 	return result;
 }
+//(float)
+float Vector3::dot(const Vector3& rhs)
+{
+	return (m_x * rhs.m_x) + (m_y * rhs.m_y) + (m_z * rhs.m_z);
+}
 
+//Returns the cross product as a vector.
+Vector3 Vector3::cross(const Vector3& right)
+{
+	Vector3 result;
+	result.m_x = (m_y * right.m_z) - (m_z * right.m_y);
+	result.m_y = (m_z * right.m_x) - (m_x * right.m_z);
+	result.m_z = (m_x * right.m_y) - (m_y * right.m_x);
+	return result;
+}
+//Normalises a vector
 void Vector3::normalise()
 {
 	float mag = magnitude();
-
-	_STL_ASSERT(mag != 0.0f, "Normalise: Divide by zero");
-	assert(mag != 0.0f && "Normalise: Divide by zero");
 	if (mag != 0.0f)
 	{
-		x /= mag;
-		y /= mag;
-		z /= mag;
+		m_x /= mag;
+		m_y /= mag;
+		m_z /= mag;
 	}
 }
 
-Vector3 Vector3::normaliseOther(const Vector3& other)
+Vector3 Vector3::normaliseOther(Vector3 other)
 {
-	Vector3 result(other.x, other.y, other.z);
+	Vector3 result(other.m_x, other.m_y, other.m_y);
 	result.normalise();
 	return result;
 }
 
-float Vector3::dot(const Vector3& rhs)
-{
-	return (x * rhs.x) + (y * rhs.y) + (z * rhs.z);
-}
+//-----------------------------------------------
+//Operators
+//-----------------------------------------------
 
-Vector3 Vector3::cross(Vector3 rhs)
+//Adds 2 vectors and returns a vector as a result
+Vector3 Vector3::operator +(const Vector3& right)
 {
 	Vector3 result;
-	result.x = (y * rhs.z) - (z * rhs.y);
-	result.y = (z * rhs.x) - (x * rhs.z);
-	result.z = (x * rhs.y) - (y * rhs.x);
-
+	result.m_x = m_x + right.m_x;
+	result.m_y = m_y + right.m_y;
+	result.m_z = m_z + right.m_z;
+	return result;
+}
+//Subtracts 2 vectors and returns a vector as a result
+Vector3 Vector3::operator -(const Vector3& right)
+{
+	Vector3 result;
+	result.m_x = m_x - right.m_x;
+	result.m_y = m_y - right.m_y;
+	result.m_z = m_z - right.m_z;
+	return result;
+}
+//Times vector by float(Vector)
+Vector3 Vector3::operator *(float right)
+{
+	Vector3 result;
+	result.m_x = m_x * right;
+	result.m_y = m_y * right;
+	result.m_z = m_z * right;
 	return result;
 }
 
-Vector3 Vector3::operator+(const Vector3& rhs)
+Vector3 operator*(float left, Vector3 right)
 {
-	return Vector3(x + rhs.x, y + rhs.y, z + rhs.z);
+	Vector3 result;
+	result.m_x = left * right.m_x;
+	result.m_y = left * right.m_y;
+	result.m_z = left * right.m_z;
+	return result;
 }
 
-Vector3 Vector3::operator-(const Vector3& rhs)
+
+Vector3 Vector3::operator/(float right)
 {
-	return Vector3(x - rhs.x, y - rhs.y, z - rhs.z);
+	Vector3 result;
+	result.m_x = m_x / right;
+	result.m_y = m_y / right;
+	result.m_z = m_z / right;
+	return result;
 }
 
-Vector3 Vector3::operator*(float rhs)
+
+
+void Vector3::operator+=(const Vector3& rhs)
 {
-	return Vector3(x * rhs, y * rhs, z * rhs);
+	m_x += rhs.m_x;
+	m_x += rhs.m_y;
+	m_z += rhs.m_z;
 }
 
-Vector3 operator*(float lhs, Vector3 rhs)
+void Vector3::operator-=(const Vector3& rhs)
 {
-	return Vector3(lhs * rhs.x, lhs * rhs.y, lhs * rhs.z);
+	m_x -= rhs.m_x;
+	m_y -= rhs.m_y;
+	m_z -= rhs.m_z;
 }
 
-Vector3 Vector3::operator/(float rhs)
+float& Vector3::operator[](int iterator)
 {
-	return Vector3(x / rhs, y / rhs, z / rhs);
-}
-
-Vector3& Vector3::operator+=(const Vector3& rhs)
-{
-	x += rhs.x;
-	y += rhs.y;
-	z += rhs.z;
-	return *this;
-}
-
-Vector3& Vector3::operator-=(const Vector3& rhs)
-{
-	x -= rhs.x;
-	y -= rhs.y;
-	z -= rhs.z;
-	return *this;
-}
-
-Vector3 Vector3::operator*=(float rhs)
-{
-	x *= rhs;
-	y *= rhs;
-	z *= rhs;
-	return *this;
-}
-
-Vector3 Vector3::operator/=(float rhs)
-{
-	x /= rhs;
-	y /= rhs;
-	z /= rhs;
-	return *this;
-}
-
-float& Vector3::operator[](int index)
-{
-	//Easiest Format
-	//if (index == 0)
-	//	return x;
-	//else if (index == 1)
-	//	return y;
-
-	//Richard Format
-	//return *(&x + index);
-
-	//Chris Format
-	return ((float*)this)[index];
+	return *(&m_x + iterator);
 }
 
 Vector3::operator float*()
 {
-	//return (float*)this;
-
-	return &x;
+	return &m_x;
 }

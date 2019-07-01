@@ -1,134 +1,128 @@
 #include "Vector2.h"
-
-#include <cmath>
-#include <cassert>
-
+#include "math.h"
 
 Vector2::Vector2()
 {
-	x = 0.0f;
-	y = 0.0f;
+	m_x = 0;
+	m_y = 0;
 }
 
-Vector2::Vector2(float x, float y)
+
+Vector2::Vector2(float x , float y)
 {
-	this->x = x;
-	this->y = y;
+	m_x = x;
+	m_y = y;
 }
 
+
+Vector2::~Vector2()
+{
+}
+
+//Gets the magnitude of a vector(float) squared
 float Vector2::magnitude()
 {
-	float result = (x * x) + (y * y);
+	float result = (m_x * m_x) + (m_y * m_y);
 	return sqrtf(result);
 }
-
+//Gets the magnitude of a vector(float) unsquared
 float Vector2::magnitudeSqr()
 {
-	float result = (x * x) + (y * y);
+	float result = (m_x * m_x) + (m_y * m_y);
 	return result;
 }
-
+//Normalises a vector
 void Vector2::normalise()
 {
 	float mag = magnitude();
-
-	_STL_ASSERT(mag != 0.0f, "Normalise: Divide by zero");
-	assert(mag != 0.0f && "Normalise: Divide by zero");
 	if (mag != 0.0f)
 	{
-		x /= mag;
-		y /= mag;
+		m_x /= mag;
+		m_y /= mag;
 	}
 }
 
-Vector2 Vector2::normaliseOther(const Vector2& other)
+Vector2 Vector2::normaliseOther(Vector2 other)
 {
-	Vector2 result(other.x, other.y);
+	Vector2 result(other.m_x, other.m_y);
 	result.normalise();
 	return result;
 }
-
+//(float)
 float Vector2::dot(const Vector2& rhs)
 {
-	return (x * rhs.x) + (y * rhs.y);
+	return (m_x * rhs.m_x) + (m_y * rhs.m_y);
 }
-
+//Returns a right angle triangle when compated against original vector(Vector).
 Vector2 Vector2::right()
 {
-	return Vector2(-y, x);
+	return Vector2(-m_y, m_x);
 }
 
-Vector2 Vector2::operator+(const Vector2& rhs)
+//-----------------------------------------------
+//Operators
+//-----------------------------------------------
+
+//Adds 2 vectors and returns a vector as a result
+Vector2 Vector2::operator +(const Vector2& right)
 {
-	return Vector2(x + rhs.x, y + rhs.y);
+	Vector2 result;
+	result.m_x = m_x + right.m_x;
+	result.m_y = m_y + right.m_y;
+	return result;
+}
+//Subtracts 2 vectors and returns a vector as a result
+Vector2 Vector2::operator -(const Vector2& right)
+{
+	Vector2 result;
+	result.m_x = m_x - right.m_x;
+	result.m_y = m_y - right.m_y;
+	return result;
+}
+//Times vector by float(Vector)
+Vector2 Vector2::operator* (float right)
+{
+	Vector2 result;
+	result.m_x = m_x * right;
+	result.m_y = m_y * right;
+	return result;
 }
 
-Vector2 Vector2::operator-(const Vector2& rhs)
+Vector2 operator*(float left, Vector2 right)
 {
-	return Vector2(x - rhs.x, y - rhs.y);
+	Vector2 result;
+	result.m_x = left * right.m_x;
+	result.m_y = left * right.m_y;
+	return result;
 }
 
-Vector2 Vector2::operator*(float rhs)
+Vector2 Vector2::operator/(float right)
 {
-	return Vector2(x * rhs, y * rhs);
+	Vector2 result;
+	result.m_x = m_x * right;
+	result.m_y = m_y * right;
+	return result;
 }
 
-Vector2 operator*(float lhs, Vector2 rhs)
+
+void Vector2::operator+=(const Vector2& rhs)
 {
-	return Vector2(lhs * rhs.x, lhs * rhs.y);
+	m_x += rhs.m_x;
+	m_x += rhs.m_y;
 }
 
-Vector2 Vector2::operator/(float rhs)
+void Vector2::operator-=(const Vector2& rhs)
 {
-	return Vector2(x / rhs, y / rhs);
+	m_x -= rhs.m_x;
+	m_y -= rhs.m_y;
 }
 
-Vector2& Vector2::operator+=(const Vector2& rhs)
+float& Vector2::operator[](int iterator)
 {
-	x += rhs.x;
-	y += rhs.y;
-	return *this;
-}
-
-Vector2& Vector2::operator-=(const Vector2& rhs)
-{
-	x -= rhs.x;
-	y -= rhs.y;
-	return *this;
-}
-
-Vector2 Vector2::operator*=(float rhs)
-{
-	x *= rhs;
-	y *= rhs;
-	return *this;
-}
-
-Vector2 Vector2::operator/=(float rhs)
-{
-	x /= rhs;
-	y /= rhs;
-	return *this;
-}
-
-float& Vector2::operator[](int index)
-{
-	//Easiest Format
-	//if (index == 0)
-	//	return x;
-	//else if (index == 1)
-	//	return y;
-
-	//Richard Format
-	//return *(&x + index);
-
-	//Chris Format
-	return ((float*)this)[index];
+	return *(&m_x + iterator);
 }
 
 Vector2::operator float*()
 {
-	//return (float*)this;
-
-	return &x;
+	return &m_x;
 }

@@ -1,34 +1,28 @@
 #pragma once
-struct Vector3
+class Vector3
 {
+public:
 	Vector3();
 	Vector3(float x, float y, float z);
+	~Vector3();
 
 	float magnitude();
 	float magnitudeSqr();
 	void normalise();
-	static Vector3 normaliseOther(const Vector3& other);
-
+	Vector3 normaliseOther(Vector3 other);
+	Vector3 cross(const Vector3& right);
 	float dot(const Vector3& rhs);
-	Vector3 cross(Vector3 rhs);
 
-	Vector3 operator+(const Vector3& rhs);
-	Vector3 operator-(const Vector3& rhs);
-	Vector3 operator*(float rhs);
-	Vector3 operator/(float rhs);
-		  
-	Vector3& operator+=(const Vector3& rhs);
-	Vector3& operator-=(const Vector3& rhs);
-	Vector3 operator*=(float rhs);
-	Vector3 operator/=(float rhs);
+	float m_x, m_y, m_z;
 
-	float& operator[](int index);
+	Vector3 operator +(const Vector3& right);
+	Vector3 operator -(const Vector3& right);
+	Vector3 operator *(float right);
+	Vector3 operator /(float right);
+	void operator +=(const Vector3& right);
+	void operator -=(const Vector3& right);
+	float& operator[](int iterator);
 	operator float*();
-
-	float x;
-	float y;
-	float z;
-
 };
 
-Vector3 operator*(float lhs, Vector3 rhs);
+Vector3 operator*(float left, Vector3 right);
