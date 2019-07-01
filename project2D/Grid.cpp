@@ -5,12 +5,9 @@
 #include "Application.h"
 #include <algorithm>
 #include <cmath>
+#include <fstream>
 
-#define SQUARE_SIZE 50.0f
-#define GRID_POS_X 32
-#define GRID_POS_Y 32
-#define ADJACENT_COST 10
-#define DIAGONAL_COST 14
+
 
 Grid::Grid(int nWidth, int nHeight)
 {
@@ -270,4 +267,52 @@ int Grid::CalculateHeuristic(Node * pNode, Node * pEnd)
 		return (DIAGONAL_COST * distY) + ADJACENT_COST * (distX - distY);
 	else
 		return (DIAGONAL_COST * distX) + ADJACENT_COST * (distY - distX);
+}
+
+
+//----------------------------------------------------
+//Saves and loads the grid.
+//File only stores state of grid at the moment.
+//Consider creating a SaveData class in which will
+//take all relevant data from 
+//----------------------------------------------------
+void Grid::Save()
+{
+	//Get the current grids state.
+	//If more than 2 states (eg enums)
+	//change 'saved' array type.
+	bool saved[GRID_WIDTH * GRID_HEIGHT];
+	for (int i = 0; i < GRID_HEIGHT; i++)
+	{
+		for (int j = 0; j < GRID_WIDTH; j++)
+			saved[(i * 10) + j] = m_apNodeList[i][j]->m_bBlocked;
+	}
+	std::fstream file;
+	//Open or create file.
+	file.open("level.dat", std::ios::out);
+	file.close();
+	file.open("level.dat", std::ios::out | std::ios::binary);
+	//Write to file.
+	file.write((char*)&saved, sizeof(bool[GRID_WIDTH * GRID_HEIGHT]));
+	//Close file.
+	file.close();
+}
+
+void Grid::Load()
+{
+	bool load[GRID_WIDTH * GRID_HEIGHT];
+	std::fstream file;
+	//Open or check if file exists.
+	file.open("level.dat", std::ios::in | std::ios::binary);
+	//Display error if nothing to load.
+
+	//Read from file.
+	file.read((char*)&load, sizeof(bool[GRID_WIDTH * GRID_HEIGHT]));
+	//Close file.
+	file.close();
+	for (int i = 0; i < GRID_HEIGHT; i++)
+	{
+		for (int j = 0; j < GRID_WIDTH; j++)
+			m_apNodeList[i][j]->m_bBlocked = load[(i * 10) + j];
+	}
 }
