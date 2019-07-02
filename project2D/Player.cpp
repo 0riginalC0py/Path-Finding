@@ -2,7 +2,7 @@
 #include "Input.h"
 #include "Node.h"
 
-Player::Player(Grid* pGrid)
+Player::Player(Grid* pGrid, DebugList* pDebugList)
 {
 	// Load the player's sprite.
 	m_texture = new aie::Texture("./textures/ship.png");
@@ -12,6 +12,9 @@ Player::Player(Grid* pGrid)
 	m_v2Position.y = 0.0f;
 	m_pGrid = pGrid;
 	m_bPathFinding = false;
+
+	m_pDebug = pDebugList;
+
 }
 
 Player::~Player()
@@ -98,6 +101,7 @@ void Player::Update(float deltaTime)
 			m_bPathFinding = false;
 		
 	}
+
 }
 
 
@@ -106,17 +110,23 @@ void Player::Draw(aie::Renderer2D* m_2dRenderer)
 	// Draw the player's sprite.
 	m_2dRenderer->DrawSprite(m_texture, m_v2Position.x, m_v2Position.y, 0.0f, 0.0f, m_fRotation);
 
-	m_2dRenderer->SetRenderColour(0xFF2376FF);
-	for (int i = 1; i < m_Path.size(); i++)
-	{
-		m_2dRenderer->DrawLine(m_Path[i - 1].x, m_Path[i - 1].y, m_Path[i].x, m_Path[i].y, 5.0f);
-	}
+		if (m_pDebug->item[0])
+		{
+			m_2dRenderer->SetRenderColour(0xFF2376FF);
+			for (int i = 1; i < m_Path.size(); i++)
+			{
+				m_2dRenderer->DrawLine(m_Path[i - 1].x, m_Path[i - 1].y, m_Path[i].x, m_Path[i].y, 5.0f);
+			}
+		}
 
-	m_2dRenderer->SetRenderColour(0x3F2BA6FF);
-	m_2dRenderer->DrawCircle(m_v2StartPos.x, m_v2StartPos.y, 5.0f);
+		if (m_pDebug->item[1])
+		{
+			m_2dRenderer->SetRenderColour(0x3F2BA6FF);
+			m_2dRenderer->DrawCircle(m_v2StartPos.x, m_v2StartPos.y, 5.0f);
 
-	m_2dRenderer->SetRenderColour(0x24F856FF);
-	m_2dRenderer->DrawCircle(m_v2EndPos.x, m_v2EndPos.y, 5.0f);
+			m_2dRenderer->SetRenderColour(0x24F856FF);
+			m_2dRenderer->DrawCircle(m_v2EndPos.x, m_v2EndPos.y, 5.0f);
+		}
 
 	m_2dRenderer->SetRenderColour(0xFFFFFFFF);
 }

@@ -15,15 +15,17 @@ Game2D::Game2D(const char* title, int width, int height, bool fullscreen) : Game
 	// Initalise the 2D renderer.
 	m_2dRenderer = new aie::Renderer2D();
 
+	m_pDebugList = new DebugList();
+
 	// Create some textures for testing.
 	m_texture = new aie::Texture("./textures/hero.png");
 	m_texture2 = new aie::Texture("./textures/rock_large.png");
 	m_font = new aie::Font("./font/consolas.ttf", 24);
 
-	m_pGrid = new Grid(GRID_WIDTH, GRID_HEIGHT);
-
+	m_pGrid = new Grid(GRID_WIDTH, GRID_HEIGHT, m_pDebugList);
+	
 	// Create a player object.
-	m_Player = new Player(m_pGrid);
+	m_Player = new Player(m_pGrid, m_pDebugList);
 
 }
 
@@ -34,6 +36,8 @@ Game2D::~Game2D()
 	m_Player = nullptr;
 
 	delete m_pGrid;
+	delete m_pDebugList;
+
 	// Deleted the textures.
 	delete m_font;
 	delete m_texture;
@@ -68,13 +72,13 @@ void Game2D::Update(float deltaTime)
 			pMouseNode->m_bBlocked = false;
 	}
 
-	//if (input->WasKeyPressed(aie::INPUT_KEY_S))
-	//	m_v2StartPos = v2MousePos;
+	if (input->WasKeyPressed(aie::INPUT_KEY_9))
+		m_v2StartPos = v2MousePos;
 
-	//if (input->WasKeyPressed(aie::INPUT_KEY_E))
-	//	m_v2EndPos = v2MousePos;
+	if (input->WasKeyPressed(aie::INPUT_KEY_0))
+		m_v2EndPos = v2MousePos;
 
-	//m_pGrid->FindPath(m_v2StartPos, m_v2EndPos, m_Path);
+	m_pGrid->FindPath(m_v2StartPos, m_v2EndPos, m_Path);
 
 	if (input->WasKeyPressed(aie::INPUT_KEY_J))
 		m_pGrid->Save();
@@ -83,12 +87,10 @@ void Game2D::Update(float deltaTime)
 		m_pGrid->Load();
 
 	
-		
-	
-	m_debug.Update();
-	
-
 	// Exit the application if escape is pressed.
+	m_pDebugList->Update();
+
+	
 }
 
 void Game2D::Draw()
@@ -103,20 +105,17 @@ void Game2D::Draw()
 	m_2dRenderer->Begin();
 
 	m_pGrid->Draw(m_2dRenderer);
-
-	if (m_debug.item[0])
-	{
 	
 	m_2dRenderer->SetRenderColour(0xFF2376FF);
 	for (int i = 1; i < m_Path.size(); i++)
 	{
 		m_2dRenderer->DrawLine(m_Path[i - 1].x, m_Path[i - 1].y, m_Path[i].x, m_Path[i].y, 5.0f);
 	}
-	}
-	m_2dRenderer->SetRenderColour(0x3F2BA6FF);
+	
+	m_2dRenderer->SetRenderColour(0x3F2BA688);
 	m_2dRenderer->DrawCircle(m_v2StartPos.x, m_v2StartPos.y, 5.0f);
 
-	m_2dRenderer->SetRenderColour(0x24F856FF);
+	m_2dRenderer->SetRenderColour(0x24F85688);
 	m_2dRenderer->DrawCircle(m_v2EndPos.x, m_v2EndPos.y, 5.0f);
 
 	m_2dRenderer->SetRenderColour(0xFFFFFFFF);

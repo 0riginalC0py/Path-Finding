@@ -9,7 +9,7 @@
 
 
 
-Grid::Grid(int nWidth, int nHeight)
+Grid::Grid(int nWidth, int nHeight, DebugList* pDebugList)
 {
 	m_nWidth = nWidth;
 	m_nHeight = nHeight;
@@ -80,6 +80,8 @@ Grid::Grid(int nWidth, int nHeight)
 
 	//Create the closed list
 	m_bClosedList = new bool[m_nWidth * m_nHeight];
+
+	m_pDebug = pDebugList;
 }
 
 
@@ -113,28 +115,34 @@ void Grid::Draw(aie::Renderer2D * pRenderer)
 				pRenderer->SetRenderColour(0x0F8EDCFF);
 
 			if (m_apNodeList)
-				pRenderer->DrawBox(v2Pos.x, v2Pos.y, SQUARE_SIZE/* - 10.0f*/, SQUARE_SIZE/* - 10.0f*/);
+				pRenderer->DrawBox(v2Pos.x, v2Pos.y, SQUARE_SIZE, SQUARE_SIZE);
 
-			//for (int n = 0; n < NEIGHBOUR_COUNT; n++)
-			//{
-			//	if (m_apNodeList[x][y]->m_apNeighbours[n])
-			//	{
-			//		Vector2 v2NeighbourPos = m_apNodeList[x][y]->m_apNeighbours[n]->m_v2Position;
-			//		char FScore[32];
-			//		sprintf_s(FScore, 32, "FS: %i", m_apNodeList[x][y]->m_apNeighbours[n]->m_nFScore);
-			//		pRenderer->SetRenderColour(0x9698DB10);
-			//		pRenderer->DrawLine(v2Pos.x, v2Pos.y, v2NeighbourPos.x, v2NeighbourPos.y);
-			//		if (!m_apNodeList[x][y]->m_apNeighbours[n]->m_bBlocked)
-			//		{
-			//			pRenderer->SetRenderColour(0x25FB64FF);
-			//			pRenderer->DrawText2D(m_font, FScore, v2NeighbourPos.x - 25, v2NeighbourPos.y + 15);
-			//		}
-			//	}
-			//}
+			for (int n = 0; n < NEIGHBOUR_COUNT; n++)
+			{
+				if (m_apNodeList[x][y]->m_apNeighbours[n])
+				{
+						if (m_pDebug->item[2])
+						{
+							Vector2 v2NeighbourPos = m_apNodeList[x][y]->m_apNeighbours[n]->m_v2Position;
+							pRenderer->SetRenderColour(0x9698DB10);
+							pRenderer->DrawLine(v2Pos.x, v2Pos.y, v2NeighbourPos.x, v2NeighbourPos.y);
+							if (!m_apNodeList[x][y]->m_apNeighbours[n]->m_bBlocked)
+							{
+								if (m_pDebug->item[3])
+								{
+									char FScore[32];
+									sprintf_s(FScore, 32, "FS: %i", m_apNodeList[x][y]->m_apNeighbours[n]->m_nFScore);
+									pRenderer->SetRenderColour(0x25FB64FF);
+									pRenderer->DrawText2D(m_font, FScore, v2NeighbourPos.x - 25, v2NeighbourPos.y + 15);
+								}
+							}
+						}
+					}
+				}
+			}
 			pRenderer->SetRenderColour(0xFFFFFFFF);
 		}
 	}
-}
 
 Node* Grid::GetNodeByPosition(Vector2 v2Pos)
 {
@@ -285,7 +293,7 @@ void Grid::Save()
 	for (int i = 0; i < GRID_HEIGHT; i++)
 	{
 		for (int j = 0; j < GRID_WIDTH; j++)
-			saved[(i * 10) + j] = m_apNodeList[i][j]->m_bBlocked;
+			saved[(i * GRID_WIDTH) + j] = m_apNodeList[i][j]->m_bBlocked;
 	}
 	std::fstream file;
 	//Open or create file.
@@ -313,6 +321,6 @@ void Grid::Load()
 	for (int i = 0; i < GRID_HEIGHT; i++)
 	{
 		for (int j = 0; j < GRID_WIDTH; j++)
-			m_apNodeList[i][j]->m_bBlocked = load[(i * 10) + j];
+			m_apNodeList[i][j]->m_bBlocked = load[(i * GRID_WIDTH) + j];
 	}
 }
