@@ -130,10 +130,18 @@ void Grid::Draw(aie::Renderer2D * pRenderer)
 							{
 								if (m_pDebug->item[3])
 								{
+									char HScore[32];
+									sprintf_s(HScore, 32, "HS: %i", m_apNodeList[x][y]->m_apNeighbours[n]->m_nHScore);
+									pRenderer->SetRenderColour(0x25FB64FF);
+									pRenderer->DrawText2D(m_font, HScore, v2NeighbourPos.x - 25, v2NeighbourPos.y + 15);
+									char GScore[32];
+									sprintf_s(GScore, 32, "GS: %i", m_apNodeList[x][y]->m_apNeighbours[n]->m_nGScore);
+									pRenderer->SetRenderColour(0x25FB64FF);
+									pRenderer->DrawText2D(m_font, GScore, v2NeighbourPos.x - 25, v2NeighbourPos.y);
 									char FScore[32];
 									sprintf_s(FScore, 32, "FS: %i", m_apNodeList[x][y]->m_apNeighbours[n]->m_nFScore);
 									pRenderer->SetRenderColour(0x25FB64FF);
-									pRenderer->DrawText2D(m_font, FScore, v2NeighbourPos.x - 25, v2NeighbourPos.y + 15);
+									pRenderer->DrawText2D(m_font, FScore, v2NeighbourPos.x - 25, v2NeighbourPos.y - 15);
 								}
 							}
 						}
